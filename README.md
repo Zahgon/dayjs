@@ -22,18 +22,17 @@ English | [简体中文](./docs/zh-cn/README.zh-CN.md) | [日本語](./docs/ja/R
     </a>
 </p>
 
-> Day.js is a minimalist JavaScript library that parses, validates, manipulates, and displays dates and times for modern browsers with a largely Moment.js-compatible API. If you use Moment.js, you already know how to use Day.js.
+> Day.js is a minimalist date library that parses, validates, manipulates, and displays dates and times with a largely Moment.js-compatible API. This is Day.js for Go: the core, all 37 plugins and all 143 locales, giving the same results as Day.js 1.11.23 on Node.js 24, down to how JavaScript's `Date` parses strings and resolves local times and how `Intl` reports time zones.
 
-```js
-dayjs().startOf('month').add(1, 'day').set('year', 2018).format('YYYY-MM-DD HH:mm:ss');
+```go
+dayjs.New().StartOf("month").Add(1, "day").Set("year", 2018).Format("YYYY-MM-DD HH:mm:ss")
 ```
 
 * 🕒 Familiar Moment.js API & patterns
 * 💪 Immutable
 * 🔥 Chainable
 * 🌐 I18n support
-* 📦 2kb mini library
-* 👫 All browsers supported
+* 📦 No dependencies: time zone data is embedded
 
 ---
 
@@ -41,63 +40,63 @@ dayjs().startOf('month').add(1, 'day').set('year', 2018).format('YYYY-MM-DD HH:m
 
 ### Documentation
 
-You can find more details, API, and other docs on [day.js.org](https://day.js.org/) website.
+You can find more details, API, and other docs on [day.js.org](https://day.js.org/) website. The Go API is the JavaScript one, mapped mechanically: `dayjs(...)` is `dayjs.New(...)`, `dayjs.utc(...)` is `dayjs.Utc(...)`, methods start with an upper-case letter, and a method that reads a value without arguments and sets it with them is two methods, `Year()` and `SetYear(2020)`. Numbers are `float64`, `null` is `nil`, `undefined` is `dayjs.Undefined`, an object literal is `dayjs.Obj{"years", 1, "months", 2}`, and an exception is a panic carrying a `*dayjs.Error`.
 
 ### Installation
 
 ```console
-npm install dayjs --save
+go get github.com/iamkun/dayjs-go
 ```
 
-📚[Installation Guide](https://day.js.org/docs/en/installation/installation)
+The module needs Go 1.27 and nothing else.
 
 ### API
 
 It's easy to use Day.js APIs to parse, validate, manipulate, and display dates and times.
 
-```javascript
-dayjs('2018-08-08') // parse
+```go
+import dayjs "github.com/iamkun/dayjs-go"
 
-dayjs().format('{YYYY} MM-DDTHH:mm:ss SSS [Z] A') // display
+dayjs.New("2018-08-08") // parse
 
-dayjs().set('month', 3).month() // get & set
+dayjs.New().Format("{YYYY} MM-DDTHH:mm:ss SSS [Z] A") // display
 
-dayjs().add(1, 'year') // manipulate
+dayjs.New().Set("month", 3).Month() // get & set
 
-dayjs().isBefore(dayjs()) // query
+dayjs.New().Add(1, "year") // manipulate
+
+dayjs.New().IsBefore(dayjs.New()) // query
 ```
-
-📚[API Reference](https://day.js.org/docs/en/parse/parse)
 
 ### I18n
 
-Day.js has great support for internationalization.
+Day.js has great support for internationalization. A locale is loaded by calling its function in package `locale`, as `require('dayjs/locale/es')` loads it in JavaScript.
 
-But none of them will be included in your build unless you use them.
+```go
+import "github.com/iamkun/dayjs-go/locale"
 
-```javascript
-import 'dayjs/locale/es' // load on demand
+locale.Es() // load a locale
+dayjs.Locale("es") // use it globally
 
-dayjs.locale('es') // use Spanish locale globally
-
-dayjs('2018-05-05').locale('zh-cn').format() // use Chinese Simplified locale in a specific instance
+locale.ZhCn()
+dayjs.New("2018-05-05").SetLocale("zh-cn").Format() // use it in one instance
 ```
-
-📚[Internationalization](https://day.js.org/docs/en/i18n/i18n)
 
 ### Plugin
 
 A plugin is an independent module that can be added to Day.js to extend functionality or add new features.
 
-```javascript
-import advancedFormat from 'dayjs/plugin/advancedFormat' // load on demand
+```go
+import "github.com/iamkun/dayjs-go/plugin"
 
-dayjs.extend(advancedFormat) // use plugin
+dayjs.Extend(plugin.AdvancedFormat) // use a plugin
 
-dayjs().format('Q Do k kk X x') // more available formats
+dayjs.New().Format("Q Do k kk X x") // more available formats
 ```
 
-📚[Plugin List](https://day.js.org/docs/en/plugin/plugin)
+### Tests
+
+`go test ./...` replays a battery of calls recorded from Day.js 1.11.23 on Node.js 24 in several time zones (`testdata/replay.jsonl`), each in a process of its own.
 
 ## Downloads
 ![Day.js Chart](./docs/assets/download.png)
